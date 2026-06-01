@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.solidapp.core.ui.theme.SolidAppTheme
 import com.example.solidapp.feature.expenses.presentation.ui.AddExpenseScreen
 import com.example.solidapp.feature.expenses.presentation.ui.ExpenseListScreen
+import com.example.solidapp.feature.statistics.presentation.StatisticsScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,17 +31,15 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = "expense_list") {
                         composable("expense_list") {
                             ExpenseListScreen(
-                                onNavigateToAddExpense = {
-                                    navController.navigate("add_expense")
-                                }
+                                onNavigateToAddExpense = { navController.navigate("add_expense") },
+                                onNavigateToStatistics = { navController.navigate("statistics") }
                             )
                         }
                         composable("add_expense") {
-                            AddExpenseScreen(
-                                onNavigateBack = {
-                                    navController.popBackStack()
-                                }
-                            )
+                            AddExpenseScreen(onNavigateBack = { navController.popBackStack() })
+                        }
+                        composable("statistics") {
+                            StatisticsScreen(onNavigateBack = { navController.popBackStack() })
                         }
                     }
                 }

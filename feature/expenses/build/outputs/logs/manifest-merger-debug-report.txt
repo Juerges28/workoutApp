@@ -1,16 +1,16 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\gordi\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest6145456658237098240.xml:2:13-83
-INJECTED from C:\Users\gordi\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest6145456658237098240.xml:2:13-83
+ADDED from C:\Users\Admin\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest9971983613490779187.xml:2:13-83
+INJECTED from C:\Users\Admin\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest9971983613490779187.xml:2:13-83
 	package
-		INJECTED from C:\Users\gordi\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest6145456658237098240.xml
+		INJECTED from C:\Users\Admin\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest9971983613490779187.xml
 	xmlns:android
-		ADDED from C:\Users\gordi\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest6145456658237098240.xml:2:23-81
+		ADDED from C:\Users\Admin\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest9971983613490779187.xml:2:23-81
 uses-sdk
-INJECTED from C:\Users\gordi\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest6145456658237098240.xml reason: use-sdk injection requested
-INJECTED from C:\Users\gordi\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest6145456658237098240.xml
-INJECTED from C:\Users\gordi\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest6145456658237098240.xml
+INJECTED from C:\Users\Admin\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest9971983613490779187.xml reason: use-sdk injection requested
+INJECTED from C:\Users\Admin\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest9971983613490779187.xml
+INJECTED from C:\Users\Admin\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest9971983613490779187.xml
 	android:targetSdkVersion
-		INJECTED from C:\Users\gordi\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest6145456658237098240.xml
+		INJECTED from C:\Users\Admin\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest9971983613490779187.xml
 	android:minSdkVersion
-		INJECTED from C:\Users\gordi\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest6145456658237098240.xml
+		INJECTED from C:\Users\Admin\AndroidStudioProjects\solidApp\feature\expenses\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest9971983613490779187.xml

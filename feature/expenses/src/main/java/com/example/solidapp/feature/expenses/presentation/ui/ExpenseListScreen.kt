@@ -12,12 +12,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.solidapp.domain.model.Expense
+import com.example.solidapp.domain.model.ExpenseCategory
+import com.example.solidapp.domain.model.PaymentMethod
 import com.example.solidapp.feature.expenses.presentation.ExpenseViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -39,14 +45,61 @@ import java.util.*
 @Composable
 fun ExpenseListScreen(
     onNavigateToAddExpense: () -> Unit,
+    onNavigateToStatistics: () -> Unit = {},
     viewModel: ExpenseViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    var showExportDialog by remember { mutableStateOf(false) }
+
+    if (showExportDialog) {
+        AlertDialog(
+            onDismissRequest = { showExportDialog = false },
+            title = { Text("Exportar gastos") },
+            text = { Text("Elige el formato de exportación:") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.exportExpenses("CSV")
+                    showExportDialog = false
+                }) { Text("CSV") }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    viewModel.exportExpenses("PDF")
+                    showExportDialog = false
+                }) { Text("PDF") }
+            }
+        )
+    }
+
+    state.exportResult?.let { result ->
+        AlertDialog(
+            onDismissRequest = { viewModel.clearExportResult() },
+            title = { Text("Resultado de exportación") },
+            text = {
+                Text(
+                    text = result,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { viewModel.clearExportResult() }) { Text("Cerrar") }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Mis Gastos") },
+                actions = {
+                    IconButton(onClick = { showExportDialog = true }) {
+                        Icon(Icons.Default.Share, contentDescription = "Exportar")
+                    }
+                    IconButton(onClick = onNavigateToStatistics) {
+                        Icon(Icons.Default.BarChart, contentDescription = "Estadísticas")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                     titleContentColor = MaterialTheme.colorScheme.onBackground
@@ -69,7 +122,6 @@ fun ExpenseListScreen(
                 .padding(padding)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            // Enhanced Header: Total Amount with Gradient
             val gradientColors = listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary)
             Box(
                 modifier = Modifier
@@ -104,7 +156,6 @@ fun ExpenseListScreen(
                 )
             }
 
-            // Empty State or List
             if (state.expenses.isEmpty() && !state.isLoading) {
                 EmptyStateView()
             } else {
@@ -209,14 +260,14 @@ fun SwipeToDeleteExpenseItem(expense: Expense, onDelete: () -> Unit) {
 @Composable
 fun ExpenseItem(expense: Expense) {
     val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-    
-    // Dynamic Icon based on category
-    val categoryIcon = when (expense.category.lowercase(Locale.getDefault())) {
-        "comida", "restaurante", "supermercado" -> Icons.Default.Fastfood
-        "transporte", "gasolina", "coche" -> Icons.Default.DirectionsCar
-        "salud", "farmacia", "médico" -> Icons.Default.LocalHospital
-        "compras", "ropa" -> Icons.Default.ShoppingCart
-        else -> Icons.Default.Receipt
+
+    val categoryIcon = when (expense.category) {
+        ExpenseCategory.FOOD -> Icons.Default.Fastfood
+        ExpenseCategory.TRANSPORT -> Icons.Default.DirectionsCar
+        ExpenseCategory.HEALTH -> Icons.Default.LocalHospital
+        ExpenseCategory.SHOPPING -> Icons.Default.ShoppingCart
+        ExpenseCategory.ENTERTAINMENT -> Icons.Default.Star
+        ExpenseCategory.OTHER -> Icons.Default.Receipt
     }
 
     Card(
@@ -233,7 +284,6 @@ fun ExpenseItem(expense: Expense) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                // Category Icon
                 Box(
                     modifier = Modifier
                         .size(48.dp)
@@ -243,7 +293,7 @@ fun ExpenseItem(expense: Expense) {
                 ) {
                     Icon(
                         imageVector = categoryIcon,
-                        contentDescription = expense.category,
+                        contentDescription = expense.category.displayName,
                         tint = MaterialTheme.colorScheme.secondary
                     )
                 }
@@ -254,12 +304,30 @@ fun ExpenseItem(expense: Expense) {
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = dateFormat.format(Date(expense.timestamp)),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.CreditCard,
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = when (val m = expense.paymentMethod) {
+                                is PaymentMethod.Cash -> "Efectivo"
+                                is PaymentMethod.Card -> "•••• ${m.lastFourDigits}"
+                            },
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                        )
+                    }
                 }
             }
             Text(
