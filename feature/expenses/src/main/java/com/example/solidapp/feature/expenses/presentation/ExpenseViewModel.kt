@@ -2,9 +2,9 @@ package com.example.solidapp.feature.expenses.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.solidapp.domain.model.Expense
-import com.example.solidapp.domain.model.ExpenseCategory
-import com.example.solidapp.domain.model.PaymentMethod
+import com.example.solidapp.domain.model.WorkoutCategory
+import com.example.solidapp.domain.model.WorkoutLocation
+import com.example.solidapp.domain.model.WorkoutSession
 import com.example.solidapp.domain.usecase.AddExpenseUseCase
 import com.example.solidapp.domain.usecase.CalculateTotalUseCase
 import com.example.solidapp.domain.usecase.DeleteExpenseUseCase
@@ -33,19 +33,17 @@ class ExpenseViewModel @Inject constructor(
     private val _state = MutableStateFlow(ExpenseUiState())
     val state: StateFlow<ExpenseUiState> = _state.asStateFlow()
 
-    init {
-        loadExpenses()
-    }
+    init { loadSessions() }
 
-    private fun loadExpenses() {
+    private fun loadSessions() {
         getExpensesUseCase()
-            .onEach { expenses ->
+            .onEach { sessions ->
                 _state.update {
                     it.copy(
-                        expenses = expenses,
-                        totalAmount = calculateTotalUseCase(expenses),
-                        isLoading = false,
-                        error = null
+                        sessions     = sessions,
+                        totalMinutes = calculateTotalUseCase(sessions),
+                        isLoading    = false,
+                        error        = null
                     )
                 }
             }
@@ -55,45 +53,39 @@ class ExpenseViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun addExpense(title: String, amountText: String, category: ExpenseCategory?, paymentMethod: PaymentMethod) {
-        val amount = amountText.toDoubleOrNull()
-        val titleErr = if (title.isBlank()) "El título no puede estar vacío" else null
-        val amountErr = if (amount == null || amount <= 0) "Introduce una cantidad válida" else null
-        val categoryErr = if (category == null) "Selecciona una categoría" else null
+    fun addSession(title: String, durationText: String, category: WorkoutCategory?, location: WorkoutLocation) {
+        val duration = durationText.toDoubleOrNull()
+        val titleErr    = if (title.isBlank())                    "El nombre no puede estar vacío"  else null
+        val durationErr = if (duration == null || duration <= 0)  "Ingresa una duración válida"      else null
+        val categoryErr = if (category == null)                   "Selecciona el tipo"               else null
 
-        if (titleErr != null || amountErr != null || categoryErr != null) {
-            _state.update { it.copy(titleError = titleErr, amountError = amountErr, categoryError = categoryErr) }
+        if (titleErr != null || durationErr != null || categoryErr != null) {
+            _state.update { it.copy(titleError = titleErr, durationError = durationErr, categoryError = categoryErr) }
             return
         }
-
         viewModelScope.launch {
             try {
-                addExpenseUseCase(title, amount!!, category!!, paymentMethod)
-                _state.update { it.copy(titleError = null, amountError = null, categoryError = null, addSuccess = true) }
+                addExpenseUseCase(title, duration!!, category!!, location)
+                _state.update { it.copy(titleError = null, durationError = null, categoryError = null, addSuccess = true) }
             } catch (e: Exception) {
                 _state.update { it.copy(error = e.localizedMessage) }
             }
         }
     }
 
-    fun clearAddSuccess() {
-        _state.update { it.copy(addSuccess = false) }
-    }
+    fun clearAddSuccess() = _state.update { it.copy(addSuccess = false) }
 
-    fun deleteExpense(expense: Expense) {
+    fun deleteSession(session: WorkoutSession) {
         viewModelScope.launch {
-            try {
-                deleteExpenseUseCase(expense)
-            } catch (e: Exception) {
-                _state.update { it.copy(error = e.localizedMessage) }
-            }
+            try { deleteExpenseUseCase(session) }
+            catch (e: Exception) { _state.update { it.copy(error = e.localizedMessage) } }
         }
     }
 
-    fun exportExpenses(format: String) {
+    fun exportSessions(format: String) {
         viewModelScope.launch {
             try {
-                val result = exportExpensesUseCase(_state.value.expenses, format)
+                val result = exportExpensesUseCase(_state.value.sessions, format)
                 _state.update { it.copy(exportResult = result) }
             } catch (e: Exception) {
                 _state.update { it.copy(error = e.localizedMessage) }
@@ -101,7 +93,5 @@ class ExpenseViewModel @Inject constructor(
         }
     }
 
-    fun clearExportResult() {
-        _state.update { it.copy(exportResult = null) }
-    }
+    fun clearExportResult() = _state.update { it.copy(exportResult = null) }
 }

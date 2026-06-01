@@ -1,10 +1,10 @@
 package com.example.solidapp.domain.model
 
-data class Expense(
+data class WorkoutSession(
     val id: Long = 0,
     val title: String,
-    val amount: Double,
-    val category: ExpenseCategory,
+    val durationMinutes: Double,
+    val category: WorkoutCategory,
     val timestamp: Long,
-    val paymentMethod: PaymentMethod = PaymentMethod.Cash
+    val location: WorkoutLocation = WorkoutLocation.Gym
 )

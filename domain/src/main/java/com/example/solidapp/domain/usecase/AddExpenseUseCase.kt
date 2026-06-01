@@ -1,8 +1,8 @@
 package com.example.solidapp.domain.usecase
 
-import com.example.solidapp.domain.model.Expense
-import com.example.solidapp.domain.model.ExpenseCategory
-import com.example.solidapp.domain.model.PaymentMethod
+import com.example.solidapp.domain.model.WorkoutCategory
+import com.example.solidapp.domain.model.WorkoutLocation
+import com.example.solidapp.domain.model.WorkoutSession
 import com.example.solidapp.domain.repository.ExpenseWriter
 import com.example.solidapp.domain.util.TimeProvider
 import javax.inject.Inject
@@ -13,19 +13,19 @@ class AddExpenseUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         title: String,
-        amount: Double,
-        category: ExpenseCategory,
-        paymentMethod: PaymentMethod = PaymentMethod.Cash
+        durationMinutes: Double,
+        category: WorkoutCategory,
+        location: WorkoutLocation = WorkoutLocation.Gym
     ) {
-        if (title.isBlank()) throw IllegalArgumentException("El título no puede estar vacío")
-        if (amount <= 0) throw IllegalArgumentException("El monto debe ser mayor a 0")
+        if (title.isBlank()) throw IllegalArgumentException("El nombre no puede estar vacío")
+        if (durationMinutes <= 0) throw IllegalArgumentException("La duración debe ser mayor a 0")
         writer.insertExpense(
-            Expense(
-                title = title,
-                amount = amount,
-                category = category,
-                timestamp = timeProvider.now(),
-                paymentMethod = paymentMethod
+            WorkoutSession(
+                title           = title,
+                durationMinutes = durationMinutes,
+                category        = category,
+                timestamp       = timeProvider.now(),
+                location        = location
             )
         )
     }

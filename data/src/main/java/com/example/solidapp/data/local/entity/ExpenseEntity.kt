@@ -2,9 +2,9 @@ package com.example.solidapp.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.solidapp.domain.model.Expense
-import com.example.solidapp.domain.model.ExpenseCategory
-import com.example.solidapp.domain.model.PaymentMethod
+import com.example.solidapp.domain.model.WorkoutCategory
+import com.example.solidapp.domain.model.WorkoutLocation
+import com.example.solidapp.domain.model.WorkoutSession
 
 @Entity(tableName = "expenses")
 data class ExpenseEntity(
@@ -14,39 +14,38 @@ data class ExpenseEntity(
     val amount: Double,
     val category: String,
     val timestamp: Long,
-    val paymentMethodType: String = "Cash",
+    val paymentMethodType: String = "Gym",
     val cardLastFourDigits: String? = null
 )
 
-fun ExpenseEntity.toDomain(): Expense {
-    return Expense(
-        id = id,
-        title = title,
-        amount = amount,
-        category = runCatching { ExpenseCategory.valueOf(category) }.getOrDefault(ExpenseCategory.OTHER),
-        timestamp = timestamp,
-        paymentMethod = if (paymentMethodType == "Card") {
-            PaymentMethod.Card(cardLastFourDigits ?: "")
-        } else {
-            PaymentMethod.Cash
+fun ExpenseEntity.toDomain(): WorkoutSession {
+    return WorkoutSession(
+        id              = id,
+        title           = title,
+        durationMinutes = amount,
+        category        = runCatching { WorkoutCategory.valueOf(category) }
+                              .getOrDefault(WorkoutCategory.OTHER),
+        timestamp       = timestamp,
+        location        = when (paymentMethodType) {
+            "Home"    -> WorkoutLocation.Home
+            "Outdoor" -> WorkoutLocation.Outdoor
+            else      -> WorkoutLocation.Gym
         }
     )
 }
 
-fun Expense.toEntity(): ExpenseEntity {
+fun WorkoutSession.toEntity(): ExpenseEntity {
     return ExpenseEntity(
-        id = id,
-        title = title,
-        amount = amount,
-        category = category.name,
-        timestamp = timestamp,
-        paymentMethodType = when (paymentMethod) {
-            is PaymentMethod.Cash -> "Cash"
-            is PaymentMethod.Card -> "Card"
+        id                 = id,
+        title              = title,
+        amount             = durationMinutes,
+        category           = category.name,
+        timestamp          = timestamp,
+        paymentMethodType  = when (location) {
+            is WorkoutLocation.Gym     -> "Gym"
+            is WorkoutLocation.Home    -> "Home"
+            is WorkoutLocation.Outdoor -> "Outdoor"
         },
-        cardLastFourDigits = when (val m = paymentMethod) {
-            is PaymentMethod.Card -> m.lastFourDigits
-            else -> null
-        }
+        cardLastFourDigits = null
     )
 }

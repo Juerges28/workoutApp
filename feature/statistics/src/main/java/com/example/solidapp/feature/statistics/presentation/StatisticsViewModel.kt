@@ -2,7 +2,7 @@ package com.example.solidapp.feature.statistics.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.solidapp.domain.model.ExpenseCategory
+import com.example.solidapp.domain.model.WorkoutCategory
 import com.example.solidapp.domain.usecase.CalculateMonthlyStatsUseCase
 import com.example.solidapp.domain.usecase.GetExpensesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,17 +18,15 @@ class StatisticsViewModel @Inject constructor(
     private val calculateMonthlyStatsUseCase: CalculateMonthlyStatsUseCase
 ) : ViewModel() {
 
-    private val _statsState = MutableStateFlow<Map<ExpenseCategory, Double>>(emptyMap())
-    val statsState: StateFlow<Map<ExpenseCategory, Double>> = _statsState.asStateFlow()
+    private val _statsState = MutableStateFlow<Map<WorkoutCategory, Double>>(emptyMap())
+    val statsState: StateFlow<Map<WorkoutCategory, Double>> = _statsState.asStateFlow()
 
-    init {
-        loadStatistics()
-    }
+    init { loadStatistics() }
 
     private fun loadStatistics() {
         viewModelScope.launch {
-            getExpensesUseCase().collect { expenses ->
-                _statsState.value = calculateMonthlyStatsUseCase(expenses)
+            getExpensesUseCase().collect { sessions ->
+                _statsState.value = calculateMonthlyStatsUseCase(sessions)
             }
         }
     }

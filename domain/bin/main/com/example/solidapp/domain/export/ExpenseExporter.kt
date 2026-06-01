@@ -1,7 +1,7 @@
 package com.example.solidapp.domain.export
 
-import com.example.solidapp.domain.model.Expense
+import com.example.solidapp.domain.model.WorkoutSession
 
 interface ExpenseExporter {
-    fun export(expenses: List<Expense>): String
+    fun export(sessions: List<WorkoutSession>): String
 }

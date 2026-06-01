@@ -1,10 +1,10 @@
 package com.example.solidapp.domain.model
 
-enum class ExpenseCategory(val displayName: String) {
-    FOOD("Comida"),
-    TRANSPORT("Transporte"),
-    ENTERTAINMENT("Entretenimiento"),
-    HEALTH("Salud"),
-    SHOPPING("Compras"),
+enum class WorkoutCategory(val displayName: String) {
+    CARDIO("Cardio"),
+    STRENGTH("Fuerza"),
+    FLEXIBILITY("Flexibilidad"),
+    SPORTS("Deporte"),
+    REST("Descanso"),
     OTHER("Otro")
 }

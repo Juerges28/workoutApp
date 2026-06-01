@@ -1,18 +1,19 @@
 package com.example.solidapp.data.export
 
 import com.example.solidapp.domain.export.ExpenseExporter
-import com.example.solidapp.domain.model.Expense
+import com.example.solidapp.domain.model.WorkoutSession
 
 class PdfExpenseExporter : ExpenseExporter {
-    override fun export(expenses: List<Expense>): String {
-        // Simulated PDF Export
-        val builder = java.lang.StringBuilder()
-        builder.append("--- PDF DOCUMENT START ---\n")
-        builder.append("EXPENSES REPORT\n\n")
-        expenses.forEach {
-            builder.append("* ${it.title}: $${it.amount} (${it.category.displayName})\n")
+    override fun export(sessions: List<WorkoutSession>): String {
+        val builder = StringBuilder()
+        builder.append("--- REPORTE DE ENTRENAMIENTO ---\n\n")
+        sessions.forEach {
+            builder.append("• ${it.title} — ${it.durationMinutes.toInt()} min " +
+                           "(${it.category.displayName})\n")
         }
-        builder.append("--- PDF DOCUMENT END ---\n")
+        val total = sessions.sumOf { it.durationMinutes }
+        builder.append("\nTotal: ${total.toInt()} minutos en ${sessions.size} sesiones\n")
+        builder.append("--------------------------------\n")
         return builder.toString()
     }
 }

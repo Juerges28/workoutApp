@@ -1,8 +1,9 @@
 package com.example.solidapp.domain.usecase
 
-import com.example.solidapp.domain.model.Expense
+import com.example.solidapp.domain.model.WorkoutSession
 import javax.inject.Inject
 
 class CalculateTotalUseCase @Inject constructor() {
-    operator fun invoke(expenses: List<Expense>): Double = expenses.sumOf { it.amount }
+    operator fun invoke(sessions: List<WorkoutSession>): Double =
+        sessions.sumOf { it.durationMinutes }
 }

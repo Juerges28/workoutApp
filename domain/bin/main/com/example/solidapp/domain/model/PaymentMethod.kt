@@ -1,6 +1,7 @@
 package com.example.solidapp.domain.model
 
-sealed class PaymentMethod {
-    data object Cash : PaymentMethod()
-    data class Card(val lastFourDigits: String) : PaymentMethod()
+sealed class WorkoutLocation {
+    data object Gym : WorkoutLocation()
+    data object Home : WorkoutLocation()
+    data object Outdoor : WorkoutLocation()
 }

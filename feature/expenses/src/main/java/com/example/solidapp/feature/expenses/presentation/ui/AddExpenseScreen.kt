@@ -10,13 +10,13 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.solidapp.core.ui.components.PrimaryButton
 import com.example.solidapp.core.ui.components.SolidTextField
-import com.example.solidapp.domain.model.ExpenseCategory
-import com.example.solidapp.domain.model.PaymentMethod
+import com.example.solidapp.domain.model.WorkoutCategory
+import com.example.solidapp.domain.model.WorkoutLocation
 import com.example.solidapp.feature.expenses.presentation.ExpenseViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,130 +27,121 @@ fun AddExpenseScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    var title by remember { mutableStateOf("") }
-    var amountText by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf<ExpenseCategory?>(null) }
+    var title            by remember { mutableStateOf("") }
+    var durationText     by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf<WorkoutCategory?>(null) }
     var categoryExpanded by remember { mutableStateOf(false) }
-    var paymentMethod by remember { mutableStateOf<PaymentMethod>(PaymentMethod.Cash) }
-    var cardDigits by remember { mutableStateOf("") }
+    var location         by remember { mutableStateOf<WorkoutLocation>(WorkoutLocation.Gym) }
 
     LaunchedEffect(state.addSuccess) {
-        if (state.addSuccess) {
-            viewModel.clearAddSuccess()
-            onNavigateBack()
-        }
+        if (state.addSuccess) { viewModel.clearAddSuccess(); onNavigateBack() }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Añadir Gasto") },
+                title = { Text("Nueva sesión", fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    containerColor             = MaterialTheme.colorScheme.background,
+                    titleContentColor          = MaterialTheme.colorScheme.onBackground,
                     navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp)
+                .padding(horizontal = 24.dp, vertical = 8.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            Spacer(modifier = Modifier.height(4.dp))
+
             SolidTextField(
-                value = title,
+                value         = title,
                 onValueChange = { title = it },
-                label = "Título (ej. Supermercado)",
-                isError = state.titleError != null,
-                errorMessage = state.titleError
+                label         = "Nombre del ejercicio",
+                isError       = state.titleError != null,
+                errorMessage  = state.titleError
             )
 
             SolidTextField(
-                value = amountText,
-                onValueChange = { amountText = it },
-                label = "Cantidad",
-                isError = state.amountError != null,
-                errorMessage = state.amountError,
+                value           = durationText,
+                onValueChange   = { durationText = it },
+                label           = "Duración (min)",
+                isError         = state.durationError != null,
+                errorMessage    = state.durationError,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
             )
 
             ExposedDropdownMenuBox(
-                expanded = categoryExpanded,
+                expanded         = categoryExpanded,
                 onExpandedChange = { categoryExpanded = !categoryExpanded }
             ) {
                 OutlinedTextField(
-                    value = selectedCategory?.displayName ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Categoría") },
-                    trailingIcon = { Icon(Icons.Default.ArrowDropDown, contentDescription = null) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(),
-                    isError = state.categoryError != null,
+                    value          = selectedCategory?.displayName ?: "",
+                    onValueChange  = {},
+                    readOnly       = true,
+                    label          = { Text("Tipo") },
+                    trailingIcon   = { Icon(Icons.Default.ArrowDropDown, null) },
+                    modifier       = Modifier.fillMaxWidth().menuAnchor(),
+                    isError        = state.categoryError != null,
                     supportingText = { if (state.categoryError != null) Text(state.categoryError!!) }
                 )
                 ExposedDropdownMenu(
-                    expanded = categoryExpanded,
+                    expanded         = categoryExpanded,
                     onDismissRequest = { categoryExpanded = false }
                 ) {
-                    ExpenseCategory.entries.forEach { cat ->
+                    WorkoutCategory.entries.forEach { cat ->
                         DropdownMenuItem(
-                            text = { Text(cat.displayName) },
-                            onClick = {
-                                selectedCategory = cat
-                                categoryExpanded = false
-                            }
+                            text    = { Text(cat.displayName) },
+                            onClick = { selectedCategory = cat; categoryExpanded = false }
                         )
                     }
                 }
             }
 
-            Text("Método de pago", style = MaterialTheme.typography.labelLarge)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(
-                    selected = paymentMethod is PaymentMethod.Cash,
-                    onClick = { paymentMethod = PaymentMethod.Cash },
-                    label = { Text("Efectivo") }
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    "Lugar",
+                    style      = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Medium,
+                    color      = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                FilterChip(
-                    selected = paymentMethod is PaymentMethod.Card,
-                    onClick = { paymentMethod = PaymentMethod.Card(cardDigits) },
-                    label = { Text("Tarjeta") }
-                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf(
+                        "Gimnasio" to WorkoutLocation.Gym,
+                        "Casa"     to WorkoutLocation.Home,
+                        "Exterior" to WorkoutLocation.Outdoor
+                    ).forEach { (label, loc) ->
+                        FilterChip(
+                            selected = location == loc,
+                            onClick  = { location = loc },
+                            label    = { Text(label, style = MaterialTheme.typography.labelMedium) }
+                        )
+                    }
+                }
             }
 
-            if (paymentMethod is PaymentMethod.Card) {
-                SolidTextField(
-                    value = cardDigits,
-                    onValueChange = {
-                        if (it.length <= 4) {
-                            cardDigits = it
-                            paymentMethod = PaymentMethod.Card(it)
-                        }
-                    },
-                    label = "Últimos 4 dígitos",
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                onClick = { viewModel.addSession(title, durationText, selectedCategory, location) },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape    = MaterialTheme.shapes.medium
+            ) {
+                Text("Guardar sesión", fontWeight = FontWeight.SemiBold)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-
-            PrimaryButton(
-                text = "Guardar Gasto",
-                onClick = {
-                    viewModel.addExpense(title, amountText, selectedCategory, paymentMethod)
-                }
-            )
         }
     }
 }

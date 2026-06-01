@@ -1,8 +1,8 @@
 package com.example.solidapp.domain.repository
 
-import com.example.solidapp.domain.model.Expense
+import com.example.solidapp.domain.model.WorkoutSession
 
 interface ExpenseWriter {
-    suspend fun insertExpense(expense: Expense)
-    suspend fun deleteExpense(expense: Expense)
+    suspend fun insertExpense(session: WorkoutSession)
+    suspend fun deleteExpense(session: WorkoutSession)
 }
